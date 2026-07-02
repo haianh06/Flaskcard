@@ -35,4 +35,31 @@ async def seed_database():
     # Run migrations and then the seeding script as a background process so the request doesn't timeout
     # Use powershell if on Windows, or sh on Linux (Render uses Linux)
     subprocess.Popen("alembic upgrade head && python seed_all_words.py", shell=True)
-    return {"message": "Database migrations and seeding have been started in the background! It will take about 2-3 minutes. Please check your Render logs."}
+    return {"message": "Database migrations and seeding have been started in the background! Please check /seed_progress to see the progress."}
+
+from sqlalchemy import text
+from .database import SessionDep
+
+@app.get("/seed_progress")
+async def seed_progress(session: SessionDep):
+    """Temporary endpoint to check the progress of the database seeding"""
+    try:
+        # Get the total number of words in the database
+        result = await session.execute(text("SELECT count(*) FROM word"))
+        count = result.scalar()
+        total = 217674
+        percentage = round((count / total) * 100, 2) if count else 0
+        return {
+            "status": "Seeding in progress" if count < total else "Completed",
+            "current_count": count,
+            "total_words": total,
+            "progress_percent": percentage
+        }
+    except Exception as e:
+        # If table doesn't exist yet, return 0
+        return {
+            "status": "Initializing (Creating tables or downloading data...)",
+            "current_count": 0,
+            "total_words": 217674,
+            "progress_percent": 0.0
+        }
