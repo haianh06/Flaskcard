@@ -11,3 +11,4 @@ PyMuPDF
 alembic
 fastapi-mail
 python-multipart
+ijson

@@ -50,24 +50,22 @@ async def seed_all_words():
         if not json_file:
             raise Exception("No JSON file found in the archive.")
             
-        print(f"Loading JSON data from {json_file}...")
-        with open(json_file, 'r', encoding='utf-8') as f:
-            jmdict_data = json.load(f)
-            
-        words = jmdict_data.get('words', [])
-        total_words = len(words)
-        print(f"Successfully loaded {total_words} words from JMDict.")
+        import ijson
         
-        async with SessionLocal() as session:
-            print("Cleaning up any previous aborted JMDict imports to prevent duplicates...")
-            await session.execute(delete(Word).where(Word.jlpt_level == "Unknown"))
-            await session.commit()
+        print(f"Streaming JSON data from {json_file} using ijson to save memory...")
+        with open(json_file, 'rb') as f:
+            words_stream = ijson.items(f, 'words.item')
             
-            batch_size = 10000
-            words_to_insert = []
-            inserted_count = 0
-            
-            for i, entry in enumerate(words):
+            async with SessionLocal() as session:
+                print("Cleaning up any previous aborted JMDict imports to prevent duplicates...")
+                await session.execute(delete(Word).where(Word.jlpt_level == "Unknown"))
+                await session.commit()
+                
+                batch_size = 10000
+                words_to_insert = []
+                inserted_count = 0
+                
+                for entry in words_stream:
                 # Extract kanji (if any, else kana)
                 kanji = ""
                 if entry.get("kanji"):
@@ -108,7 +106,7 @@ async def seed_all_words():
                     session.add_all(words_to_insert)
                     await session.commit()
                     inserted_count += len(words_to_insert)
-                    print(f"Inserted {inserted_count}/{total_words} words...")
+                    print(f"Inserted {inserted_count} words...")
                     words_to_insert = []
             
             # Insert remaining
