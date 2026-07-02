@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: always
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      # Override the DB URL if you want to use a postgres container instead of localhost
+      # - DATABASE_URL=postgresql+asyncpg://postgres:password@db:5432/flashcard_db
+      - FRONTEND_URL=http://localhost  # The public domain of the frontend
+    restart: always
+
+  # Optional: If you want to deploy a Postgres DB alongside the app instead of using a managed one
+  # db:
+  #   image: postgres:15-alpine
+  #   environment:
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=password
+  #     - POSTGRES_DB=flashcard_db
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
