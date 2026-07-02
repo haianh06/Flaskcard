@@ -67,7 +67,9 @@ def do_run_migrations(connection: sqlalchemy.Connection) -> None:
 
 async def run_async_migrations() -> None:
     db_url = os.getenv("DATABASE_URL")
-    if db_url and db_url.startswith("postgresql://"):
+    if db_url and db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql+asyncpg://", 1)
+    elif db_url and db_url.startswith("postgresql://"):
         db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
         
     config_section = config.get_section(config.config_ini_section, {})
