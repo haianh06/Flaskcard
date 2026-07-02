@@ -10,3 +10,4 @@ pydantic
 PyMuPDF
 alembic
 fastapi-mail
+python-multipart
