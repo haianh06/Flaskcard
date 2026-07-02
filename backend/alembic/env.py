@@ -10,8 +10,8 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/..")
 
-from backend.app.database import Base
-from backend.app.models import *
+from app.database import Base
+from app.models import *
 import sqlalchemy
 
 
