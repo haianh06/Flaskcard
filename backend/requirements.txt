@@ -8,3 +8,5 @@ python-dotenv
 email-validator
 pydantic
 PyMuPDF
+alembic
+fastapi-mail
