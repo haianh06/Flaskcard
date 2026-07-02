@@ -2,8 +2,8 @@ fastapi
 uvicorn[standard]
 sqlalchemy
 asyncpg
-passlib[bcrypt]
-python-jose[cryptography]
+bcrypt
+PyJWT
 python-dotenv
 email-validator
 pydantic

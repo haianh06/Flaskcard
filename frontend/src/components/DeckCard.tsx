@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Book, Play, Edit2, Trash2 } from 'lucide-react';
+import { Play, Edit2, Trash2 } from 'lucide-react';
 
 interface DeckProps {
   deck: {
