@@ -26,3 +26,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+import subprocess
+
+@app.get("/seed_database")
+async def seed_database():
+    """Temporary endpoint to seed the database on Render"""
+    # Run the seeding script as a background process so the request doesn't timeout
+    subprocess.Popen(["python", "seed_all_words.py"])
+    return {"message": "Database seeding has been started in the background! It will take about 2-3 minutes. Please check your Render logs."}
