@@ -45,7 +45,7 @@ async def seed_progress(session: SessionDep):
     """Temporary endpoint to check the progress of the database seeding"""
     try:
         # Get the total number of words in the database
-        result = await session.execute(text("SELECT count(*) FROM word"))
+        result = await session.execute(text("SELECT count(*) FROM words"))
         count = result.scalar()
         total = 217674
         percentage = round((count / total) * 100, 2) if count else 0
