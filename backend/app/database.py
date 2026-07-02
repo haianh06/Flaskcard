@@ -7,7 +7,12 @@ import os
 
 # Đầu tiên là tạo 1 DB sau đó là kết nối
 load_dotenv() # Load biến môi trường của DB
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL", "")
+
+# Many PaaS providers like Render inject `postgresql://` instead of `postgresql+asyncpg://`
+if DATABASE_URL and DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+
 engine = create_async_engine(DATABASE_URL) # Tạo engine để kết nối với DB
 SessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession, expire_on_commit=False) # Tạo các phiên làm việc
 

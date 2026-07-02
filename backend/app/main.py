@@ -32,6 +32,7 @@ import subprocess
 @app.get("/seed_database")
 async def seed_database():
     """Temporary endpoint to seed the database on Render"""
-    # Run the seeding script as a background process so the request doesn't timeout
-    subprocess.Popen(["python", "seed_all_words.py"])
-    return {"message": "Database seeding has been started in the background! It will take about 2-3 minutes. Please check your Render logs."}
+    # Run migrations and then the seeding script as a background process so the request doesn't timeout
+    # Use powershell if on Windows, or sh on Linux (Render uses Linux)
+    subprocess.Popen("alembic upgrade head && python seed_all_words.py", shell=True)
+    return {"message": "Database migrations and seeding have been started in the background! It will take about 2-3 minutes. Please check your Render logs."}

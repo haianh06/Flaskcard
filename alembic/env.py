@@ -66,8 +66,16 @@ def do_run_migrations(connection: sqlalchemy.Connection) -> None:
         context.run_migrations()
 
 async def run_async_migrations() -> None:
+    db_url = os.getenv("DATABASE_URL")
+    if db_url and db_url.startswith("postgresql://"):
+        db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        
+    config_section = config.get_section(config.config_ini_section, {})
+    if db_url:
+        config_section["sqlalchemy.url"] = db_url
+        
     connectable = async_engine_from_config(
-        config.get_section(config.config_ini_section, {}),
+        config_section,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )
